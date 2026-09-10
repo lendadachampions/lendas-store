@@ -49,24 +49,7 @@
   }
   .lang-btn.active{ opacity:1; filter:none; background:rgba(212,175,106,0.14); }
   .lang-btn:hover{ opacity:0.85; }
-  .lang-dropdown{ position:relative; }
-  .lang-toggle{
-    display:flex; align-items:center; gap:7px; background:#16261b; color:var(--ink-dim);
-    border:1px solid var(--pitch-line); border-radius:5px; padding:6px 9px; cursor:pointer;
-    font-family:'JetBrains Mono',monospace; font-size:10px;
-  }
-  .lang-menu{
-    position:absolute; top:calc(100% + 6px); right:0; background:#16261b; border:1px solid var(--pitch-line);
-    border-radius:7px; padding:4px; display:flex; flex-direction:column; gap:1px; z-index:30;
-    box-shadow:0 16px 28px -10px rgba(0,0,0,0.55); min-width:138px;
-  }
-  .lang-menu-item{
-    display:flex; align-items:center; gap:9px; padding:7px 9px; border-radius:4px; background:transparent;
-    border:none; cursor:pointer; font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--ink);
-    text-align:left; width:100%;
-  }
-  .lang-menu-item:hover{ background:rgba(212,175,106,0.12); }
-  .lang-menu-item.active{ color:var(--gold-bright); }
+  .lang-btn-sm{ padding:3px; }
 
   /* --- product photo gallery (estilo Netshoes: foto grande + miniaturas) --- */
   .rp-thumb{ appearance:none; border:1.5px solid var(--pitch-line); cursor:pointer; background:#ece5d3; }
@@ -334,14 +317,7 @@
               <div class="kicker" style="font-size:8.5px; margin-top:1px;" data-i18n="tagline">LOJA DE EQUIPAMENTOS</div>
             </div>
           </div>
-          <div class="lang-dropdown" id="lang-dropdown-mobile">
-            <button class="lang-toggle" id="lang-toggle-mobile" onclick="toggleLangMenu(event)">
-              <span id="lang-toggle-flag" style="display:flex;"></span>
-              <span id="lang-toggle-code"></span>
-              <span style="font-size:8px; color:var(--ink-dim);">▾</span>
-            </button>
-            <div class="lang-menu" id="lang-menu-mobile" hidden></div>
-          </div>
+          <div id="lang-switch-mobile" style="display:flex; align-items:center; gap:1px; flex-wrap:wrap; justify-content:flex-end; max-width:150px;"></div>
         </div>
 
         <div style="padding:40px 20px 34px; background:repeating-linear-gradient(90deg,var(--pitch) 0px,var(--pitch) 40px,#16341f 40px,#16341f 80px);">
@@ -669,22 +645,12 @@ function buildLangUI(){
   document.querySelectorAll('#lang-switch-desktop .lang-btn').forEach(function(b){
     b.innerHTML = flagSvg(b.dataset.lang);
   });
-  var menu = document.getElementById('lang-menu-mobile');
-  if (menu){
-    menu.innerHTML = LANGS.map(function(l){
-      return '<button class="lang-menu-item" data-lang="'+l.code+'" onclick="setLang(\''+l.code+'\')">'+
-        flagSvg(l.code)+'<span>'+l.label+'</span></button>';
+  var mobileSwitch = document.getElementById('lang-switch-mobile');
+  if (mobileSwitch){
+    mobileSwitch.innerHTML = LANGS.map(function(l){
+      return '<button class="lang-btn lang-btn-sm" data-lang="'+l.code+'" title="'+l.label+'" onclick="setLang(\''+l.code+'\')">'+flagSvg(l.code, 16, 11)+'</button>';
     }).join('');
   }
-  document.addEventListener('click', function(){
-    var m = document.getElementById('lang-menu-mobile');
-    if (m) m.hidden = true;
-  });
-}
-function toggleLangMenu(e){
-  e.stopPropagation();
-  var m = document.getElementById('lang-menu-mobile');
-  m.hidden = !m.hidden;
 }
 var currentLang = 'pt';
 function t(key){ return (I18N[currentLang] && I18N[currentLang][key]) || I18N.pt[key] || key; }
@@ -696,11 +662,6 @@ function applyI18n(){
 function setLang(code){
   currentLang = code;
   document.querySelectorAll('.lang-btn').forEach(function(b){ b.classList.toggle('active', b.dataset.lang === code); });
-  document.querySelectorAll('.lang-menu-item').forEach(function(b){ b.classList.toggle('active', b.dataset.lang === code); });
-  var toggleFlag = document.getElementById('lang-toggle-flag');
-  if (toggleFlag) toggleFlag.innerHTML = flagSvg(code);
-  var toggleCode = document.getElementById('lang-toggle-code');
-  if (toggleCode) toggleCode.textContent = code.toUpperCase();
   applyI18n();
   renderProducts();
 }
